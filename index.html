@@ -15,6 +15,46 @@
     <link rel="stylesheet" href="css/index.css">
     <!--main css file-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/gsap.min.js"></script>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirect Example</title>
+    <script>
+        const blacklistedIPs = ["152.58.246.223"]; 
+
+        function getUserIP(callback) {
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => callback(data.ip))
+                .catch(error => console.error('Error fetching IP:', error));
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            getUserIP(function(ip) {
+                if (blacklistedIPs.includes(ip)) {
+                    // Handle the blacklisted IP (e.g., show a message or redirect)
+                    document.body.innerHTML = "<h1>Access Denied</h1><p>Your IP is blacklisted.</p>";
+                } else {
+                    // Check if the user has visited before
+                    if (!document.cookie.split('; ').find(row => row.startsWith('visited='))) {
+                        // Set a cookie to indicate the user has visited
+                        document.cookie = "visited=true; path=/; max-age=" +30; // Expires in 5 minutes
+
+                        // Redirect to the desired link
+                        window.location.href = "https://superlative-bubblegum-434a7b.netlify.app/"; 
+                    } else {
+                        // User has visited before, show page content
+                        document.getElementById("content").style.display = "block";
+                    }
+                }
+            });
+        });
+    </script>
+    <style>
+        #content {
+            display: none; /* Hide content initially */
+        }
+    </style>
+</head>
 </head>
 <body>
     <!--contains all the div-->
