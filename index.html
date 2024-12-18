@@ -1,37 +1,23 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    
-   
     <title>GateKeeper</title>
-  <!--favicon-img--> 
    <link rel="icon" type="image/png" href="images/clipart1018763.png">
-   <!--favicon-img-->
-   <!--main css file should not be removed -->
     <link rel="stylesheet" href="css/index.css">
-    <!--main css file-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/gsap.min.js"></script>
 	<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirect</title>
-	
-
-
-
-	
 	<script>
         // Function to get URL parameters
         function getQueryParam(param) {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(param);
         }
-
         // Function to handle page load
         window.onload = function() {
             const token = getQueryParam('token');
-            
             if (!token) {
                 // If no token is found, show a message and prevent further action
                 document.body.innerHTML = '<h1>Error: No CAPTCHA token received. Please complete the CAPTCHA.</h1>';
@@ -41,7 +27,6 @@
                 verifyToken(token);
             }
         };
-
         // Function to send the token to your back end for verification
         function verifyToken(token) {
             fetch('https://captcha-70fu.onrender.com/verify-token?token=' + token)
@@ -62,14 +47,12 @@
     </script>
     <script>
         const blacklistedIPs = ["192.168.73.109"]; 
-
         function getUserIP(callback) {
             fetch('https://api.ipify.org?format=json')
                 .then(response => response.json())
                 .then(data => callback(data.ip))
                 .catch(error => console.error('Error fetching IP:', error));
         }
-
         document.addEventListener("DOMContentLoaded", function() {
             getUserIP(function(ip) {
                 if (blacklistedIPs.includes(ip)) {
@@ -80,7 +63,6 @@
                     if (!document.cookie.split('; ').find(row => row.startsWith('visited='))) {
                         // Set a cookie to indicate the user has visited
                         document.cookie = "visited=true; path=/; max-age=" +30; // Expires in 5 minutes
-
                         // Redirect to the desired link
                         window.location.href = "https://6714b905d0608bae3a9fb20c--luminous-dasik-d17ee5.netlify.app/"; 
                     } else {
@@ -99,24 +81,15 @@
 </head>
 </head>
 <body>
-    <!--contains all the div-->
     <div id="all">
-    <!--mouse  follower-->
         <div class="cursor"></div>
-    <!--mouse  follower-->
-    <!--loader-->
         <div id="loader">
             <span class="color">12+</span>Firewallls
         </div>
-    <!--loader-end-->
-    <!--link-screen-->
         <div id="breaker">
         </div>
         <div id="breaker-two">
         </div>
-    <!--link-screen-->
-        <!--Main-Section-->
-        <!--Navigator-fullscreen-->
         <div id="navigation-content">
             <div class="logo">
                 <img src="images/clipart1018763.png" alt="logo">
@@ -128,14 +101,8 @@
             <div class="navigation-links">
                 <a href="#" data-text="HOME" id="home-link" >HOME</a>
 		                    <a href="https://luminous-dasik-d17ee5.netlify.app/" data-text="BIO" id="home-link" >REGISTER BIO</a>
-
-                
-        
             </div>
         </div>
-        <!--Navigator-Fullscreen END-->
-          <!--Home Page-->
-        <!--Menubar-->
         <div id="navigation-bar">
             <img src="images/clipart1018763.png" alt="logo">
             <div class="menubar">
@@ -144,16 +111,11 @@
                 <span class="third-span"></span>
             </div>
         </div>
-        <!--Menubar End-->
-          <!--Header-->
         <div id="header">
             <div id="particles"></div>
-              <!--Social Media Links-->
             <div class="social-media-links">
-               <a href="https://www.instagram.com/1x.ub_/"><img src="images/instagram logo.png" class="social-media" alt="instagram-logo"></a><!--Your instagram homepage link inser in place of "#"-->
-
+               <a href="https://www.instagram.com/1x.ub_/"><img src="images/instagram logo.png" class="social-media" alt="instagram-logo"></a>
             </div>
-            <!--Social Media Links end-->
             <div class="header-content">
                 <div class="header-content-box">
                 <div class="firstline"><span class="color">Gate</span>Keeper</div>
@@ -163,19 +125,12 @@
             <span class="slash">|</span>
         </div>
                     <div class="contact">
-                <a href="mailto:sofiyasenthilkumar@gmail.com"><img src="images/mail.png" alt="email-pic" class="contactpic"></a><!--Your email Id write in place of "#"-->
-                <a href="Tel:7010516233"><img src="images/call.png" alt="phone-pic" class="contactpic"></a><!--Your telephone number Id write in place of "#"-->
+                <a href="mailto:sofiyasenthilkumar@gmail.com"><img src="images/mail.png" alt="email-pic" class="contactpic"></a>
+                <a href="Tel:7010516233"><img src="images/call.png" alt="phone-pic" class="contactpic"></a>
                     </div>    
             </div>
             </div>
-            <!--header image-->
-           
-            <!--header image end-->
         </div>
-           <!--Header End-->
-        <!--HomePage End-->
-        <!--Main-Section End-->
-        <!--about-->
         <div id="about">
             <div class="color-changer">
             <div class="color-panel">
@@ -207,7 +162,6 @@
                 </div>
             </div>
             </div>
-            <!--about content-->
             <div id="about-content">
                 <div class="about-header">
                     About <span class="color">Project</span>
@@ -215,7 +169,6 @@
                 </div>
                 <div class="about-main">
             <div class="about-first-paragraph wow">
-            <!--about description-->
                <span class="about-first-line">
                     We
                     <span class="color">ARE HAPPY TO SHARE THIS WITH</span>
@@ -223,17 +176,13 @@
                      <br>
                <span class="about-second-line"> This project is done by S.Siddarth,Srinath,Parikshith and Pranesh</span>
                <div class="cv">
-
             </div>
             </div>
-            <!--about picture-->
             <div class="about-img">
                 <img src="images/coding.png" alt="Your Image">
             </div>
             </div>
-    
             </div>
-            <!--services start-->
             <div id="services">
                 <div class="color-changer">
                     <div class="color-panel">
@@ -265,12 +214,9 @@
                         </div>
                     </div>
                     </div>
-            <!--services header-->
                     <div class="services-heading wow">
                         <span class="color">Our</span> Goals
                     </div>
-            <!--services header end-->
-            <!--services content-->
                     <div class="services-content">
                            <div class="service-one service wow">
                                <div class="service-img">
@@ -301,19 +247,12 @@
                         </div>
                     </div>
             </div>
-            <!--services content end-->
-            <!--services end-->
-           
-    <!--copyright-section You Can Remove After Downloading-->
             <div class="footer">
              <div class="footer-text">
                  <img src="./images/copyright.png" alt="copyright-img" class="images" height="14px"> Siddarth
              </div>
             </div>
-    <!--copyright-section-->
         </div>
-        <!--about end-->
-        <!--portfolio-->
         <div id="portfolio">
             <div class="color-changer">
                 <div class="color-panel">
@@ -370,7 +309,6 @@
                         <div class="button"><a href="#"><button><span class="index"> View Project<i class="gg-arrow-right"></i></span></button></a></div>
                     </div>
                 </div>
-             
                 <div class="portfolio portfolio-third">
                     <div class="portfolio-image">
                         <img src="images/portfolio-third.jpg" alt="portfolio-third">
@@ -394,16 +332,12 @@
                     </div>
                 </div>
                  </div>
-                    <!--copyright-section You Can Remove After Downloading-->
             <div class="footer">
                 <div class="footer-text">
                     <img src="./images/copyright.png" alt="copyright-img" class="images" height="14px"> Siddarth
                 </div>
                </div>
-       <!--copyright-section-->
              </div>
-        <!--portfolio end-->
-        <!--blog-->
         <div id="blog">
             <div class="color-changer">
                 <div class="color-panel">
@@ -516,16 +450,12 @@
                     </div></a>
                 </div>        
             </div>
-               <!--copyright-section You Can Remove After Downloading-->
                <div class="footer">
                 <div class="footer-text">
                     <img src="./images/copyright.png" alt="copyright-img" class="images" height="14px"> Siddarth
                 </div>
                </div>
-       <!--copyright-section-->
         </div>
-        <!--blog end-->
-        <!--contact-->
      <div id="contact">
         <div class="color-changer">
             <div class="color-panel">
@@ -560,7 +490,6 @@
          <div class="contact-header">Contact <span class="color"> Me</span>
         <div class="contact-header-caption"> <span class="color"> Get</span> In Touch.</div></div>
         <div class="contact-content">
-            <!--Contact form-->
              <div class="contact-form">
                  <div class="form-header">
                      Message Me
@@ -574,10 +503,7 @@
                     <textarea id ="body" class="input-textarea" placeholder="message"></textarea>
                     <button type="button" id ="submit" value="send">Submit</button>
                  </form>
-               
              </div>
-            <!--Contact form-->
-            <!--Contact information-->
              <div class="contact-info">
                 <div class="contact-info-header">
                     Contact Info
@@ -604,7 +530,6 @@
                       <p>+9865376531</p>
                 </div>
               </div>
-              
               <div class="contect-info-content-line">
                   <img src="./images/icon-email.png" class="icon" alt="email-icon">
                   <div class="contact-info-icon-text">
@@ -613,28 +538,21 @@
                 </div>
               </div>
                 </div>
-            <!--Contact information end-->
            </div>
         </div>
-                    <!--copyright-section You Can Remove After Downloading-->
                     <div class="footer">
                         <div class="footer-text">
                             <img src="./images/copyright.png" alt="copyright-img" class="images" height="14px"> siddarth
                         </div>
                        </div>
-               <!--copyright-section-->
      </div>
-        <!--contact end-->
     </div>
-    <!--all the divisions-->
     <script src="js/jquery.min.js"></script>
     <script src="js/particles.js"></script>
     <script src="js/particles.min.js"></script>
     <script src="js/index.js"></script>
-    <!--particles script-->
     <script>
   particlesJS("particles", {"particles":{"number":{"value":40,"density":{"enable":true,"value_area":800}},"color":{"value":"#ffffff"},"shape":{"type":"circle","stroke":{"width":0,"color":"#000000"},"polygon":{"nb_sides":5},"image":{"src":"img/github.svg","width":100,"height":100}},"opacity":{"value":0.5,"random":false,"anim":{"enable":false,"speed":1,"opacity_min":0.1,"sync":false}},"size":{"value":3,"random":true,"anim":{"enable":false,"speed":40,"size_min":0.1,"sync":false}},"line_linked":{"enable":true,"distance":150,"color":"#ffffff","opacity":0.4,"width":1},"move":{"enable":true,"speed":6,"direction":"none","random":false,"straight":false,"out_mode":"out","bounce":false,"attract":{"enable":false,"rotateX":600,"rotateY":1200}}},"interactivity":{"detect_on":"canvas","events":{"onhover":{"enable":true,"mode":"repulse"},"onclick":{"enable":true,"mode":"push"},"resize":true},"modes":{"grab":{"distance":400,"line_linked":{"opacity":1}},"bubble":{"distance":400,"size":40,"duration":2,"opacity":8,"speed":3},"repulse":{"distance":200,"duration":0.4},"push":{"particles_nb":4},"remove":{"particles_nb":2}}},"retina_detect":true});
     </script>
-
 </body>
 </html>
