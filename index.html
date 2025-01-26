@@ -61,7 +61,7 @@
     // Function to create the honeypot field
     function createHoneypot() {
         const form = document.createElement('form');
-        form.style.display = 'none'; // Make the form hidden
+        form.style.display = 'none'; // Hide the form completely
 
         // Dynamically generate a honeypot field with a random name
         const honeypotFieldName = "field_" + Math.random().toString(36).substring(2, 10);
@@ -69,7 +69,7 @@
         honeypot.type = 'text';
         honeypot.name = honeypotFieldName; // Use the random name
         honeypot.id = honeypotFieldName;
-        honeypot.autocomplete = 'off';
+        honeypot.autocomplete = 'off'; // Ensure no auto-fill
 
         form.appendChild(honeypot);
         document.body.appendChild(form);
@@ -125,7 +125,7 @@
                             // Now verify the honeypot
                             verifyHoneypot(honeypotFieldName);
                         }
-                    }, 2000); // Delay for 2 seconds before checking the honeypot
+                    }, 5000); // Delay for 5 seconds before checking the honeypot
                 } else {
                     // If already verified, show the content directly
                     const content = document.getElementById("content");
