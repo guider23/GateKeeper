@@ -45,34 +45,59 @@
                 });
         }
     </script>
-    <script>
-        const blacklistedIPs = ["192.168.73.109"]; 
-        function getUserIP(callback) {
-            fetch('https://api.ipify.org?format=json')
-                .then(response => response.json())
-                .then(data => callback(data.ip))
-                .catch(error => console.error('Error fetching IP:', error));
-        }
-        document.addEventListener("DOMContentLoaded", function() {
-            getUserIP(function(ip) {
-                if (blacklistedIPs.includes(ip)) {
-                    // Handle the blacklisted IP (e.g., show a message or redirect)
-                    document.body.innerHTML = "<h1>Access Denied</h1><p>Your IP is blacklisted.</p>";
-                } else {
-                    // Check if the user has visited before
-                    if (!document.cookie.split('; ').find(row => row.startsWith('visited='))) {
-                        // Set a cookie to indicate the user has visited
-                        document.cookie = "visited=true; path=/; max-age=" +30; // Expires in 5 minutes
-                        // Redirect to the desired link
-                        window.location.href = "https://6714b905d0608bae3a9fb20c--luminous-dasik-d17ee5.netlify.app/"; 
-                    } else {
-                        // User has visited before, show page content
-                        document.getElementById("content").style.display = "block";
-                    }
-                }
-            });
+   <script>
+    const blacklistedIPs = ["192.168.73.109"]; 
+    
+    function getUserIP(callback) {
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => callback(data.ip))
+            .catch(error => console.error('Error fetching IP:', error));
+    }
+
+    function displayHumanVerification() {
+        const verificationContainer = document.createElement('div');
+        verificationContainer.style.position = 'fixed';
+        verificationContainer.style.top = '0';
+        verificationContainer.style.left = '0';
+        verificationContainer.style.width = '100%';
+        verificationContainer.style.height = '100%';
+        verificationContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        verificationContainer.style.zIndex = '9999';
+        verificationContainer.style.display = 'flex';
+        verificationContainer.style.flexDirection = 'column';
+        verificationContainer.style.justifyContent = 'center';
+        verificationContainer.style.alignItems = 'center';
+        verificationContainer.style.color = '#fff';
+        verificationContainer.innerHTML = `
+            <h1>Please Verify You're Human</h1>
+            <p>Click the button below to confirm.</p>
+            <button id="verify-btn" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">I Am Human</button>
+        `;
+        document.body.appendChild(verificationContainer);
+
+        // Add event listener to the button
+        document.getElementById("verify-btn").addEventListener("click", function () {
+            document.cookie = "verified=true; path=/; max-age=" + 5 * 60; // Expires in 5 minutes
+            document.body.removeChild(verificationContainer);
+            document.getElementById("content").style.display = "block";
         });
-    </script>
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        getUserIP(function (ip) {
+            if (blacklistedIPs.includes(ip)) {
+                document.body.innerHTML = "<h1>Access Denied</h1><p>Your IP is blacklisted.</p>";
+            } else {
+                if (!document.cookie.split('; ').find(row => row.startsWith('verified='))) {
+                    displayHumanVerification();
+                } else {
+                    document.getElementById("content").style.display = "block";
+                }
+            }
+        });
+    });
+</script>
     <style>
         #content {
             display: none; /* Hide content initially */
