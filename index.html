@@ -82,7 +82,6 @@
 
     // Function to verify if the honeypot field has been filled (bot behavior)
     function verifyHoneypot(honeypotFieldName) {
-        // Wait for the honeypot field to be added to the DOM
         const honeypot = document.getElementById(honeypotFieldName);
         if (honeypot && honeypot.value.trim() !== "") {
             // If the honeypot has a value, assume it's a bot and deny access
