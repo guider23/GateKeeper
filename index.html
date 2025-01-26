@@ -47,9 +47,6 @@
     </script>
 
 
-
-
-
 <script>
     const blacklistedIPs = ["192.168.73.109"]; // Example blacklisted IPs
 
@@ -117,7 +114,14 @@
 
                     // Simulate a delay before verifying the honeypot field
                     setTimeout(() => {
-                        verifyHoneypot(honeypotFieldName);
+                        // Wait for the honeypot field to be available before interacting with it
+                        const honeypot = document.getElementById(honeypotFieldName);
+                        if (honeypot) {
+                            // Now that we know the honeypot exists, set its value (simulate bot interaction)
+                            honeypot.value = "bot-data"; // This will trigger the "suspicious behavior" logic
+                            // Proceed with verification
+                            verifyHoneypot(honeypotFieldName);
+                        }
                     }, 2000); // Delay for 2 seconds before checking the honeypot
                 } else {
                     // If already verified, show the content directly
@@ -130,6 +134,7 @@
         });
     });
 </script>
+
 
 
 
