@@ -82,6 +82,7 @@
 
     // Function to verify if the honeypot field has been filled (bot behavior)
     function verifyHoneypot(honeypotFieldName) {
+        // Wait for the honeypot field to be added to the DOM
         const honeypot = document.getElementById(honeypotFieldName);
         if (honeypot && honeypot.value.trim() !== "") {
             // If the honeypot has a value, assume it's a bot and deny access
@@ -113,7 +114,9 @@
                     document.body.appendChild(decoy);
 
                     // Simulate a delay before verifying the honeypot field
-                    setTimeout(() => verifyHoneypot(honeypotFieldName), 2000);
+                    setTimeout(() => {
+                        verifyHoneypot(honeypotFieldName);
+                    }, 2000); // Delay for 2 seconds before checking the honeypot
                 } else {
                     // If already verified, show the content directly
                     document.getElementById("content").style.display = "block";
@@ -122,6 +125,7 @@
         });
     });
 </script>
+
 
 
 
