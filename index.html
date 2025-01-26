@@ -46,8 +46,8 @@
         }
     </script>
    <script>
-    const blacklistedIPs = ["192.168.73.109"]; 
-    
+    const blacklistedIPs = ["192.168.73.109"]; // Example blacklisted IPs
+
     function getUserIP(callback) {
         fetch('https://api.ipify.org?format=json')
             .then(response => response.json())
@@ -55,33 +55,34 @@
             .catch(error => console.error('Error fetching IP:', error));
     }
 
-    function displayHumanVerification() {
-        const verificationContainer = document.createElement('div');
-        verificationContainer.style.position = 'fixed';
-        verificationContainer.style.top = '0';
-        verificationContainer.style.left = '0';
-        verificationContainer.style.width = '100%';
-        verificationContainer.style.height = '100%';
-        verificationContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-        verificationContainer.style.zIndex = '9999';
-        verificationContainer.style.display = 'flex';
-        verificationContainer.style.flexDirection = 'column';
-        verificationContainer.style.justifyContent = 'center';
-        verificationContainer.style.alignItems = 'center';
-        verificationContainer.style.color = '#fff';
-        verificationContainer.innerHTML = `
-            <h1>Please Verify You're Human</h1>
-            <p>Click the button below to confirm.</p>
-            <button id="verify-btn" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">I Am Human</button>
-        `;
-        document.body.appendChild(verificationContainer);
+    function createHoneypot() {
+        const form = document.createElement('form');
+        form.style.display = 'none'; // Hidden from users
 
-        // Add event listener to the button
-        document.getElementById("verify-btn").addEventListener("click", function () {
-            document.cookie = "verified=true; path=/; max-age=" + 5 * 60; // Expires in 5 minutes
-            document.body.removeChild(verificationContainer);
+        // Dynamically generate honeypot fields with random names
+        const honeypotFieldName = "field_" + Math.random().toString(36).substring(2, 10);
+        const honeypot = document.createElement('input');
+        honeypot.type = 'text';
+        honeypot.name = honeypotFieldName; // Randomized field name
+        honeypot.id = honeypotFieldName;
+        honeypot.autocomplete = 'off';
+
+        form.appendChild(honeypot);
+        document.body.appendChild(form);
+
+        return honeypotFieldName; // Return the name to check later
+    }
+
+    function verifyHoneypot(honeypotFieldName) {
+        const honeypot = document.getElementById(honeypotFieldName);
+        if (honeypot.value.trim() !== "") {
+            // If the hidden honeypot has a value, deny access
+            document.body.innerHTML = "<h1>Access Denied</h1><p>Verification failed. Suspicious behavior detected.</p>";
+        } else {
+            // No interaction with honeypot, grant access
+            document.cookie = "verified=true; path=/; max-age=" + 5 * 60; // Valid for 5 minutes
             document.getElementById("content").style.display = "block";
-        });
+        }
     }
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -90,7 +91,17 @@
                 document.body.innerHTML = "<h1>Access Denied</h1><p>Your IP is blacklisted.</p>";
             } else {
                 if (!document.cookie.split('; ').find(row => row.startsWith('verified='))) {
-                    displayHumanVerification();
+                    const honeypotFieldName = createHoneypot();
+
+                    // Add decoy visible input to confuse bots
+                    const decoy = document.createElement('input');
+                    decoy.type = 'text';
+                    decoy.placeholder = 'Enter your name';
+                    decoy.style.margin = '20px';
+                    document.body.appendChild(decoy);
+
+                    // Simulate a delay before verification
+                    setTimeout(() => verifyHoneypot(honeypotFieldName), 2000);
                 } else {
                     document.getElementById("content").style.display = "block";
                 }
@@ -98,6 +109,13 @@
         });
     });
 </script>
+
+<!-- Your Page Content -->
+<div id="content" style="display: none;">
+    <h1>Welcome to the Site</h1>
+    <p>This is the main content of the site.</p>
+</div>
+
     <style>
         #content {
             display: none; /* Hide content initially */
