@@ -90,7 +90,10 @@
         } else {
             // If the honeypot is empty, it's a valid user, so grant access
             document.cookie = "verified=true; path=/; max-age=" + 5 * 60; // Set cookie for 5 minutes
-            document.getElementById("content").style.display = "block";
+            const content = document.getElementById("content");
+            if (content) {
+                content.style.display = "block"; // Only show content if the element exists
+            }
         }
     }
 
@@ -119,14 +122,15 @@
                     }, 2000); // Delay for 2 seconds before checking the honeypot
                 } else {
                     // If already verified, show the content directly
-                    document.getElementById("content").style.display = "block";
+                    const content = document.getElementById("content");
+                    if (content) {
+                        content.style.display = "block"; // Only show content if the element exists
+                    }
                 }
             }
         });
     });
 </script>
-
-
 
 
 
