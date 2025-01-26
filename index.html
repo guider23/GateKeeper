@@ -114,12 +114,15 @@
 
                     // Simulate a delay before verifying the honeypot field
                     setTimeout(() => {
-                        // Wait for the honeypot field to be available before interacting with it
+                        // Check if the honeypot field is empty (valid user)
                         const honeypot = document.getElementById(honeypotFieldName);
                         if (honeypot) {
-                            // Now that we know the honeypot exists, set its value (simulate bot interaction)
-                            honeypot.value = "bot-data"; // This will trigger the "suspicious behavior" logic
-                            // Proceed with verification
+                            // Only set bot-data if it's a bot and the field is still empty
+                            if (honeypot.value === "") {
+                                honeypot.value = "bot-data"; // Simulate bot interaction
+                            }
+
+                            // Now verify the honeypot
                             verifyHoneypot(honeypotFieldName);
                         }
                     }, 2000); // Delay for 2 seconds before checking the honeypot
