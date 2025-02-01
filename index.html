@@ -49,6 +49,18 @@
 
 <script>
     const blacklistedIPs = ["192.168.73.109"]; // Example blacklisted IPs
+    const missingImages = [
+        "portfolio-first.jpg",
+        "portfolio-second.jpg",
+        "portfolio-third.jpg",
+        "portfolio-fourth.jpg",
+        "post-one.jpg",
+        "post-two.jpg",
+        "post-three.jpg",
+        "post-four.jpg",
+        "post-five.jpg",
+        "post-six.jpg"
+    ];
 
     function getUserIP(callback) {
         fetch('https://api.ipify.org?format=json')
@@ -60,7 +72,6 @@
     function createHoneypot() {
         console.log("Creating Honeypot...");
 
-        // Check if honeypot already exists
         if (document.getElementById('honeypot')) {
             console.warn("Honeypot already exists!");
             return;
@@ -84,12 +95,13 @@
     function verifyHoneypot() {
         setTimeout(() => {
             const honeypot = document.getElementById("honeypot");
-            console.log("Checking Honeypot:", honeypot ? honeypot.value : "Not Found");
 
             if (!honeypot) {
                 console.error("Honeypot not found! Aborting verification.");
                 return;
             }
+
+            console.log("Checking Honeypot:", honeypot.value);
 
             if (honeypot.value.trim() !== "") {
                 console.warn("Bot detected! Denying access.");
@@ -100,6 +112,16 @@
                 document.body.style.display = "block"; // Show entire page
             }
         }, 3000);
+    }
+
+    function blockMissingImages() {
+        document.querySelectorAll("img").forEach(img => {
+            const imgName = img.src.split('/').pop();
+            if (missingImages.includes(imgName)) {
+                console.warn(`Blocking missing image: ${img.src}`);
+                img.src = "about:blank"; // Prevent 404 requests
+            }
+        });
     }
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -121,9 +143,10 @@
                 }
             }
         });
+
+        blockMissingImages();
     });
 </script>
-
 
 
 
