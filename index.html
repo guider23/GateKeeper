@@ -11,8 +11,9 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://trusted-cdn.com;">
 
 <script>
-    const blacklistedIPs = ["192.168.73.109"];
+    const blacklistedIPs = ["192.168.73.109"]; // blacklisted IPs
 
+    // Function to get user's IP address
     function getUserIP(callback) {
         fetch('https://api.ipify.org?format=json')
             .then(response => response.json())
@@ -20,8 +21,15 @@
             .catch(error => console.error('Error fetching IP:', error));
     }
 
+    // Function to create honeypot field
     function createHoneypot() {
-        if (document.getElementById('honeypot')) return;
+        console.log("Creating Honeypot...");
+
+        // Check if honeypot already exists
+        if (document.getElementById('honeypot')) {
+            console.warn("Honeypot already exists!");
+            return;
+        }
 
         const form = document.createElement('form');
         form.style.display = 'none';
@@ -34,50 +42,76 @@
 
         form.appendChild(honeypot);
         document.body.appendChild(form);
+
+        console.log("Honeypot Created successfully.");
     }
 
+    // Function to verify honeypot (checking for bot behavior)
     function verifyHoneypot() {
         setTimeout(() => {
             const honeypot = document.getElementById("honeypot");
-            if (!honeypot) return;
 
-            if (honeypot.value.trim() !== "") {
-                document.body.innerHTML = "<h1>Access Denied</h1><p>Suspicious behavior detected.</p>";
-                getUserIP(ip => blacklistedIPs.push(ip));
-            } else {
-                document.cookie = "verified=true; path=/; max-age=300";
-                document.body.style.display = "block";
+            if (!honeypot) {
+                console.error("Honeypot not found! Aborting verification.");
+                return;
             }
-        }, 3000);
+
+            console.log("Checking Honeypot:", honeypot.value);
+
+            // If bot-data is entered, deny access
+            if (honeypot.value.trim() !== "") {
+                console.warn("Bot detected! Denying access.");
+                document.body.innerHTML = "<h1>Access Denied</h1><p>Suspicious behavior detected.</p>";
+            } else {
+                console.log("User verified.");
+                document.cookie = "verified=true; path=/; max-age=300"; // Set the cookie
+                document.body.style.display = "block"; // Show the page
+            }
+        }, 3000); // Delay the verification to simulate processing time
     }
 
+    // Function to clear the "verified" cookie on each page load (force honeypot check)
     function clearVerifiedCookie() {
-        document.cookie = "verified=; path=/; max-age=0";
+        document.cookie = "verified=; path=/; max-age=0"; // Clear the cookie
+        console.log("Verified cookie cleared.");
     }
 
+    // Main event listener to handle everything
     document.addEventListener("DOMContentLoaded", function () {
-        document.body.style.display = "none";
+        console.log("DOM Content Loaded");
 
+        document.body.style.display = "none"; // Hide everything initially
+
+        // Clear the "verified" cookie to trigger honeypot check on refresh
         clearVerifiedCookie();
 
-        if (window.top !== window.self) {
-            document.body.innerHTML = "<h1>Clickjacking attempt detected!</h1>";
-            return;
-        }
-
+        // Get the user's IP and check against blacklist
         getUserIP(function (ip) {
+            console.log("User IP:", ip);
+            
             if (blacklistedIPs.includes(ip)) {
+                console.error("Blacklisted IP detected:", ip);
                 document.body.innerHTML = "<h1>Access Denied</h1><p>Your IP is blacklisted.</p>";
             } else {
+                // If the user isn't verified, start honeypot process
                 if (!document.cookie.includes("verified=true")) {
                     createHoneypot();
                     verifyHoneypot();
                 } else {
-                    document.body.style.display = "block";
+                    console.log("User already verified.");
+                    document.body.style.display = "block"; // Show the page
                 }
             }
         });
     });
+
+	if (window.top !== window.self) {
+    document.body.innerHTML = "<h1>Clickjacking attempt detected!</h1>";
+}
+
+
+		
+
 </script>
 
 
