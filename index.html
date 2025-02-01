@@ -11,18 +11,6 @@
 
 <script>
     const blacklistedIPs = ["192.168.73.109"]; // blacklisted IPs
-    const missingImages = [
-        "portfolio-first.jpg",
-        "portfolio-second.jpg",
-        "portfolio-third.jpg",
-        "portfolio-fourth.jpg",
-        "post-one.jpg",
-        "post-two.jpg",
-        "post-three.jpg",
-        "post-four.jpg",
-        "post-five.jpg",
-        "post-six.jpg"
-    ];
 
     // Function to get user's IP address
     function getUserIP(callback) {
@@ -54,7 +42,7 @@
         form.appendChild(honeypot);
         document.body.appendChild(form);
 
-        console.log("Honeypot Created:", honeypot);
+        console.log("Honeypot Created successfully.");
     }
 
     // Function to verify honeypot (checking for bot behavior)
@@ -80,18 +68,6 @@
             }
         }, 3000); // Delay the verification to simulate processing time
     }
-
-    // Function to log blacklisted IPs when user types "bips" in the console
-    function showBlacklistedIPs() {
-        console.log("Blocked IPs:", blacklistedIPs);
-    }
-
-    // Listen for "bips" command in the console
-    window.addEventListener('keydown', function(event) {
-        if (event.ctrlKey && event.shiftKey && event.key === "B") { // Trigger the "bips" command when Ctrl + Shift + B is pressed
-            showBlacklistedIPs();
-        }
-    });
 
     // Main event listener to handle everything
     document.addEventListener("DOMContentLoaded", function () {
