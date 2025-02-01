@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <script>
-    const blacklistedIPs = ["192.168.73.109", "152.58.246.84"]; // blacklisted IPs
+    const blacklistedIPs = ["192.168.73.109"]; // blacklisted IPs
     const missingImages = [
         "portfolio-first.jpg",
         "portfolio-second.jpg",
@@ -81,17 +81,6 @@
         }, 3000); // Delay the verification to simulate processing time
     }
 
-    // Function to block missing images
-    function blockMissingImages() {
-        document.querySelectorAll("img").forEach(img => {
-            const imgName = img.src.split('/').pop();
-            if (missingImages.includes(imgName)) {
-                console.warn(`Blocking missing image: ${img.src}`);
-                img.src = "about:blank"; // Prevent 404 requests
-            }
-        });
-    }
-
     // Main event listener to handle everything
     document.addEventListener("DOMContentLoaded", function () {
         document.body.style.display = "none"; // Hide everything initially
@@ -114,11 +103,9 @@
                 }
             }
         });
-
-        // Block missing images
-        blockMissingImages();
     });
 </script>
+
 
 
 
