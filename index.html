@@ -50,7 +50,6 @@
 <script>
     const blacklistedIPs = ["192.168.73.109"]; // Example blacklisted IPs
 
-    // Function to fetch the user's IP address using an external API
     function getUserIP(callback) {
         fetch('https://api.ipify.org?format=json')
             .then(response => response.json())
@@ -58,86 +57,52 @@
             .catch(error => console.error('Error fetching IP:', error));
     }
 
-    // Function to create the honeypot field
     function createHoneypot() {
         const form = document.createElement('form');
-        form.style.display = 'none'; // Hide the form completely
+        form.style.display = 'none';
 
-        // Dynamically generate a honeypot field with a random name
         const honeypotFieldName = "field_" + Math.random().toString(36).substring(2, 10);
         const honeypot = document.createElement('input');
         honeypot.type = 'text';
-        honeypot.name = honeypotFieldName; // Use the random name
+        honeypot.name = honeypotFieldName;
         honeypot.id = honeypotFieldName;
-        honeypot.autocomplete = 'off'; // Ensure no auto-fill
+        honeypot.autocomplete = 'off';
 
         form.appendChild(honeypot);
         document.body.appendChild(form);
 
-        return honeypotFieldName; // Return the name for later use
+        return honeypotFieldName;
     }
 
-    // Function to verify if the honeypot field has been filled (bot behavior)
     function verifyHoneypot(honeypotFieldName) {
-        const honeypot = document.getElementById(honeypotFieldName);
-        if (honeypot && honeypot.value.trim() !== "") {
-            // If the honeypot has a value, assume it's a bot and deny access
-            document.body.innerHTML = "<h1>Access Denied</h1><p>Verification failed. Suspicious behavior detected.</p>";
-        } else {
-            // If the honeypot is empty, it's a valid user, so grant access
-            document.cookie = "verified=true; path=/; max-age=" + 5 * 60; // Set cookie for 5 minutes
-            const content = document.getElementById("content");
-            if (content) {
-                content.style.display = "block"; // Only show content if the element exists
+        setTimeout(() => {
+            const honeypot = document.getElementById(honeypotFieldName);
+            if (honeypot && honeypot.value.trim() !== "") {
+                document.body.innerHTML = "<h1>Access Denied</h1><p>Suspicious behavior detected.</p>";
+            } else {
+                document.cookie = "verified=true; path=/; max-age=300";
+                document.body.style.display = "block"; // Show entire page
             }
-        }
+        }, 3000);
     }
 
-    // Main logic to handle page load and user verification
     document.addEventListener("DOMContentLoaded", function () {
+        document.body.style.display = "none"; // Hide everything initially
+
         getUserIP(function (ip) {
-            // Check if the user's IP is blacklisted
             if (blacklistedIPs.includes(ip)) {
                 document.body.innerHTML = "<h1>Access Denied</h1><p>Your IP is blacklisted.</p>";
             } else {
-                // Check if the user has already been verified (via cookie)
-                if (!document.cookie.split('; ').find(row => row.startsWith('verified='))) {
-                    // Create a honeypot field for verification
+                if (!document.cookie.includes("verified=true")) {
                     const honeypotFieldName = createHoneypot();
-
-                    // Add a decoy visible input field to confuse bots
-                    const decoy = document.createElement('input');
-                    decoy.type = 'text';
-                    decoy.placeholder = 'Enter your name';
-                    decoy.style.margin = '20px';
-                    document.body.appendChild(decoy);
-
-                    // Simulate a delay before verifying the honeypot field
-                    setTimeout(() => {
-                        // Check if the honeypot field is empty (valid user)
-                        const honeypot = document.getElementById(honeypotFieldName);
-                        if (honeypot) {
-                            // Only set bot-data if it's a bot and the field is still empty
-                            if (honeypot.value === "") {
-                                honeypot.value = "bot-data"; // Simulate bot interaction
-                            }
-
-                            // Now verify the honeypot
-                            verifyHoneypot(honeypotFieldName);
-                        }
-                    }, 5000); // Delay for 5 seconds before checking the honeypot
+                    verifyHoneypot(honeypotFieldName);
                 } else {
-                    // If already verified, show the content directly
-                    const content = document.getElementById("content");
-                    if (content) {
-                        content.style.display = "block"; // Only show content if the element exists
-                    }
+                    document.body.style.display = "block"; // Show entire page
                 }
             }
         });
     });
 </script>
-
 
 
 
