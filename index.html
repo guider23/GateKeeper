@@ -53,61 +53,77 @@
     function getUserIP(callback) {
         fetch('https://api.ipify.org?format=json')
             .then(response => response.json())
-            .then(data => {
-                console.log("User IP:", data.ip);
-                callback(data.ip);
-            })
+            .then(data => callback(data.ip))
             .catch(error => console.error('Error fetching IP:', error));
     }
 
     function createHoneypot() {
+        console.log("Creating Honeypot...");
+
+        // Check if honeypot already exists
+        if (document.getElementById('honeypot')) {
+            console.warn("Honeypot already exists!");
+            return;
+        }
+
         const form = document.createElement('form');
-        form.style.display = 'none'; // Completely hide the form
+        form.style.display = 'none';
 
         const honeypot = document.createElement('input');
         honeypot.type = 'text';
-        honeypot.name = "honeypot";  // Fixed name for easier debugging
+        honeypot.name = "honeypot";
         honeypot.id = "honeypot";
         honeypot.autocomplete = 'off';
 
         form.appendChild(honeypot);
         document.body.appendChild(form);
-        console.log("Honeypot field created:", honeypot);
+
+        console.log("Honeypot Created:", honeypot);
     }
 
     function verifyHoneypot() {
         setTimeout(() => {
             const honeypot = document.getElementById("honeypot");
-            if (honeypot && honeypot.value.trim() !== "") {
-                console.warn("Bot detected! Access denied.");
+            console.log("Checking Honeypot:", honeypot ? honeypot.value : "Not Found");
+
+            if (!honeypot) {
+                console.error("Honeypot not found! Aborting verification.");
+                return;
+            }
+
+            if (honeypot.value.trim() !== "") {
+                console.warn("Bot detected! Denying access.");
                 document.body.innerHTML = "<h1>Access Denied</h1><p>Suspicious behavior detected.</p>";
             } else {
-                console.log("User verified, granting access.");
-                document.cookie = "verified=true; path=/; max-age=300"; // Cookie for 5 min
-                document.body.style.display = "block"; // Show full page
+                console.log("User verified.");
+                document.cookie = "verified=true; path=/; max-age=300";
+                document.body.style.display = "block"; // Show entire page
             }
         }, 3000);
     }
 
     document.addEventListener("DOMContentLoaded", function () {
-        document.body.style.display = "none"; // Hide entire page until verification
+        document.body.style.display = "none"; // Hide everything initially
 
         getUserIP(function (ip) {
+            console.log("User IP:", ip);
+            
             if (blacklistedIPs.includes(ip)) {
                 console.error("Blacklisted IP detected:", ip);
                 document.body.innerHTML = "<h1>Access Denied</h1><p>Your IP is blacklisted.</p>";
             } else {
                 if (!document.cookie.includes("verified=true")) {
-                    createHoneypot();
+                    createHoneypot();  
                     verifyHoneypot();
                 } else {
                     console.log("User already verified.");
-                    document.body.style.display = "block"; // Show full page
+                    document.body.style.display = "block"; // Show the page
                 }
             }
         });
     });
 </script>
+
 
 
 
