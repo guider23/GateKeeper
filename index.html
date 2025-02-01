@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <script>
-    const blacklistedIPs = ["192.168.73.109,152.58.246.84"]; // blacklisted IPs
+    const blacklistedIPs = ["192.168.73.109", "152.58.246.84"]; // blacklisted IPs
     const missingImages = [
         "portfolio-first.jpg",
         "portfolio-second.jpg",
@@ -24,6 +24,7 @@
         "post-six.jpg"
     ];
 
+    // Function to get user's IP address
     function getUserIP(callback) {
         fetch('https://api.ipify.org?format=json')
             .then(response => response.json())
@@ -31,9 +32,11 @@
             .catch(error => console.error('Error fetching IP:', error));
     }
 
+    // Function to create honeypot field
     function createHoneypot() {
         console.log("Creating Honeypot...");
 
+        // Check if honeypot already exists
         if (document.getElementById('honeypot')) {
             console.warn("Honeypot already exists!");
             return;
@@ -54,6 +57,7 @@
         console.log("Honeypot Created:", honeypot);
     }
 
+    // Function to verify honeypot (checking for bot behavior)
     function verifyHoneypot() {
         setTimeout(() => {
             const honeypot = document.getElementById("honeypot");
@@ -65,17 +69,19 @@
 
             console.log("Checking Honeypot:", honeypot.value);
 
+            // If bot-data is entered, deny access
             if (honeypot.value.trim() !== "") {
                 console.warn("Bot detected! Denying access.");
                 document.body.innerHTML = "<h1>Access Denied</h1><p>Suspicious behavior detected.</p>";
             } else {
                 console.log("User verified.");
-                document.cookie = "verified=true; path=/; max-age=300";
-                document.body.style.display = "block"; // Show entire page
+                document.cookie = "verified=true; path=/; max-age=300"; // Set the cookie
+                document.body.style.display = "block"; // Show the page
             }
-        }, 3000);
+        }, 3000); // Delay the verification to simulate processing time
     }
 
+    // Function to block missing images
     function blockMissingImages() {
         document.querySelectorAll("img").forEach(img => {
             const imgName = img.src.split('/').pop();
@@ -86,9 +92,11 @@
         });
     }
 
+    // Main event listener to handle everything
     document.addEventListener("DOMContentLoaded", function () {
         document.body.style.display = "none"; // Hide everything initially
 
+        // Get the user's IP and check against blacklist
         getUserIP(function (ip) {
             console.log("User IP:", ip);
             
@@ -96,8 +104,9 @@
                 console.error("Blacklisted IP detected:", ip);
                 document.body.innerHTML = "<h1>Access Denied</h1><p>Your IP is blacklisted.</p>";
             } else {
+                // If the user isn't verified, start honeypot process
                 if (!document.cookie.includes("verified=true")) {
-                    createHoneypot();  
+                    createHoneypot();
                     verifyHoneypot();
                 } else {
                     console.log("User already verified.");
@@ -106,6 +115,7 @@
             }
         });
 
+        // Block missing images
         blockMissingImages();
     });
 </script>
