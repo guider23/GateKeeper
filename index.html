@@ -69,11 +69,20 @@
         }, 3000); // Delay the verification to simulate processing time
     }
 
+    // Function to clear the "verified" cookie on each page load (force honeypot check)
+    function clearVerifiedCookie() {
+        document.cookie = "verified=; path=/; max-age=0"; // Clear the cookie
+        console.log("Verified cookie cleared.");
+    }
+
     // Main event listener to handle everything
     document.addEventListener("DOMContentLoaded", function () {
         console.log("DOM Content Loaded");
 
         document.body.style.display = "none"; // Hide everything initially
+
+        // Clear the "verified" cookie to trigger honeypot check on refresh
+        clearVerifiedCookie();
 
         // Get the user's IP and check against blacklist
         getUserIP(function (ip) {
@@ -95,6 +104,7 @@
         });
     });
 </script>
+
 
 
 
