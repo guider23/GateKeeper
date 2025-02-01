@@ -53,56 +53,62 @@
     function getUserIP(callback) {
         fetch('https://api.ipify.org?format=json')
             .then(response => response.json())
-            .then(data => callback(data.ip))
+            .then(data => {
+                console.log("User IP:", data.ip);
+                callback(data.ip);
+            })
             .catch(error => console.error('Error fetching IP:', error));
     }
 
     function createHoneypot() {
         const form = document.createElement('form');
-        form.style.display = 'none';
+        form.style.display = 'none'; // Completely hide the form
 
-        const honeypotFieldName = "field_" + Math.random().toString(36).substring(2, 10);
         const honeypot = document.createElement('input');
         honeypot.type = 'text';
-        honeypot.name = honeypotFieldName;
-        honeypot.id = honeypotFieldName;
+        honeypot.name = "honeypot";  // Fixed name for easier debugging
+        honeypot.id = "honeypot";
         honeypot.autocomplete = 'off';
 
         form.appendChild(honeypot);
         document.body.appendChild(form);
-
-        return honeypotFieldName;
+        console.log("Honeypot field created:", honeypot);
     }
 
-    function verifyHoneypot(honeypotFieldName) {
+    function verifyHoneypot() {
         setTimeout(() => {
-            const honeypot = document.getElementById(honeypotFieldName);
+            const honeypot = document.getElementById("honeypot");
             if (honeypot && honeypot.value.trim() !== "") {
+                console.warn("Bot detected! Access denied.");
                 document.body.innerHTML = "<h1>Access Denied</h1><p>Suspicious behavior detected.</p>";
             } else {
-                document.cookie = "verified=true; path=/; max-age=300";
-                document.body.style.display = "block"; // Show entire page
+                console.log("User verified, granting access.");
+                document.cookie = "verified=true; path=/; max-age=300"; // Cookie for 5 min
+                document.body.style.display = "block"; // Show full page
             }
         }, 3000);
     }
 
     document.addEventListener("DOMContentLoaded", function () {
-        document.body.style.display = "none"; // Hide everything initially
+        document.body.style.display = "none"; // Hide entire page until verification
 
         getUserIP(function (ip) {
             if (blacklistedIPs.includes(ip)) {
+                console.error("Blacklisted IP detected:", ip);
                 document.body.innerHTML = "<h1>Access Denied</h1><p>Your IP is blacklisted.</p>";
             } else {
                 if (!document.cookie.includes("verified=true")) {
-                    const honeypotFieldName = createHoneypot();
-                    verifyHoneypot(honeypotFieldName);
+                    createHoneypot();
+                    verifyHoneypot();
                 } else {
-                    document.body.style.display = "block"; // Show entire page
+                    console.log("User already verified.");
+                    document.body.style.display = "block"; // Show full page
                 }
             }
         });
     });
 </script>
+
 
 
 
