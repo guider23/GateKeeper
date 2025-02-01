@@ -8,11 +8,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/gsap.min.js"></script>
 	<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://trusted-cdn.com;">
 
 <script>
-    const blacklistedIPs = ["192.168.73.109"]; // blacklisted IPs
+    const blacklistedIPs = ["192.168.73.109"];
 
-    // Function to get user's IP address
     function getUserIP(callback) {
         fetch('https://api.ipify.org?format=json')
             .then(response => response.json())
@@ -20,15 +20,8 @@
             .catch(error => console.error('Error fetching IP:', error));
     }
 
-    // Function to create honeypot field
     function createHoneypot() {
-        console.log("Creating Honeypot...");
-
-        // Check if honeypot already exists
-        if (document.getElementById('honeypot')) {
-            console.warn("Honeypot already exists!");
-            return;
-        }
+        if (document.getElementById('honeypot')) return;
 
         const form = document.createElement('form');
         form.style.display = 'none';
@@ -41,71 +34,50 @@
 
         form.appendChild(honeypot);
         document.body.appendChild(form);
-
-        console.log("Honeypot Created successfully.");
     }
 
-    // Function to verify honeypot (checking for bot behavior)
     function verifyHoneypot() {
         setTimeout(() => {
             const honeypot = document.getElementById("honeypot");
+            if (!honeypot) return;
 
-            if (!honeypot) {
-                console.error("Honeypot not found! Aborting verification.");
-                return;
-            }
-
-            console.log("Checking Honeypot:", honeypot.value);
-
-            // If bot-data is entered, deny access
             if (honeypot.value.trim() !== "") {
-                console.warn("Bot detected! Denying access.");
                 document.body.innerHTML = "<h1>Access Denied</h1><p>Suspicious behavior detected.</p>";
+                getUserIP(ip => blacklistedIPs.push(ip));
             } else {
-                console.log("User verified.");
-                document.cookie = "verified=true; path=/; max-age=300"; // Set the cookie
-                document.body.style.display = "block"; // Show the page
+                document.cookie = "verified=true; path=/; max-age=300";
+                document.body.style.display = "block";
             }
-        }, 3000); // Delay the verification to simulate processing time
+        }, 3000);
     }
 
-    // Function to clear the "verified" cookie on each page load (force honeypot check)
     function clearVerifiedCookie() {
-        document.cookie = "verified=; path=/; max-age=0"; // Clear the cookie
-        console.log("Verified cookie cleared.");
+        document.cookie = "verified=; path=/; max-age=0";
     }
 
-    // Main event listener to handle everything
     document.addEventListener("DOMContentLoaded", function () {
-        console.log("DOM Content Loaded");
+        document.body.style.display = "none";
 
-        document.body.style.display = "none"; // Hide everything initially
-
-        // Clear the "verified" cookie to trigger honeypot check on refresh
         clearVerifiedCookie();
 
-        // Get the user's IP and check against blacklist
+        if (window.top !== window.self) {
+            document.body.innerHTML = "<h1>Clickjacking attempt detected!</h1>";
+            return;
+        }
+
         getUserIP(function (ip) {
-            console.log("User IP:", ip);
-            
             if (blacklistedIPs.includes(ip)) {
-                console.error("Blacklisted IP detected:", ip);
                 document.body.innerHTML = "<h1>Access Denied</h1><p>Your IP is blacklisted.</p>";
             } else {
-                // If the user isn't verified, start honeypot process
                 if (!document.cookie.includes("verified=true")) {
                     createHoneypot();
                     verifyHoneypot();
                 } else {
-                    console.log("User already verified.");
-                    document.body.style.display = "block"; // Show the page
+                    document.body.style.display = "block";
                 }
             }
         });
     });
-
-	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://trusted-cdn.com;">
-
 </script>
 
 
