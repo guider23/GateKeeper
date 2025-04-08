@@ -235,6 +235,8 @@
     </script>
 	<script type="module">
   import { createClient } from 'https://esm.sh/@supabase/supabase-js'
+		window.supabase = supabase;
+
 
   const supabase = createClient(
   'https://hoyigvtfrnxizngwaswf.supabase.co',
