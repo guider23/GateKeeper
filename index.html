@@ -225,18 +225,29 @@
     console.log("Right-click disabled.");
   }
 
-  function activateProctedMode() {
-    console.log("%c🚨 GateKeeper Procted Mode Activated", "color: red; font-weight: bold;");
-    if (document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen().catch(() => {});
-    }
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) location.href = "/404.html";
-    });
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") location.href = "/404.html";
-    });
+  let fullscreenTriggered = false;
+
+function activateProctedMode() {
+  console.log("%c🚨 GateKeeper Procted Mode Activated", "color: red; font-weight: bold;");
+
+  if (!fullscreenTriggered) {
+    document.addEventListener("click", () => {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
+        fullscreenTriggered = true;
+      }
+    }, { once: true }); // Only once
   }
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) location.href = "/404.html";
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") location.href = "/404.html";
+  });
+}
+
 </script>
 
 
