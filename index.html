@@ -16,6 +16,8 @@
     'https://hoyigvtfrnxizngwaswf.supabase.co',
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhveWlndnRmcm54aXpuZ3dhc3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwNDIzNjYsImV4cCI6MjA1OTYxODM2Nn0.NqaeVsR2ucftGa-CoNpzADiAsd0SNeSkGKWSP3XOsIM'
   );
+	window.supabase = supabase;
+
 
   async function fetchRemoteSettings() {
     const { data, error } = await supabase
@@ -235,13 +237,13 @@
     </script>
 	<script type="module">
   import { createClient } from 'https://esm.sh/@supabase/supabase-js'
-		window.supabase = supabase;
 
 
   const supabase = createClient(
   'https://hoyigvtfrnxizngwaswf.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhveWlndnRmcm54aXpuZ3dhc3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwNDIzNjYsImV4cCI6MjA1OTYxODM2Nn0.NqaeVsR2ucftGa-CoNpzADiAsd0SNeSkGKWSP3XOsIM'
 );
+window.supabase = supabase;
 
 
   async function checkProtectStatus() {
