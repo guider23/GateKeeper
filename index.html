@@ -9,104 +9,147 @@
 	<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<script>
-    const blacklistedIPs = ["192.168.73.109"]; // blacklisted IPs
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js'
 
-    // Function to get user's IP address
-    function getUserIP(callback) {
-        fetch('https://api.ipify.org?format=json')
-            .then(response => response.json())
-            .then(data => callback(data.ip))
-            .catch(error => console.error('Error fetching IP:', error));
+  const supabase = createClient(
+    'https://hoyigvtfrnxizngwaswf.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhveWlndnRmcm54aXpuZ3dhc3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwNDIzNjYsImV4cCI6MjA1OTYxODM2Nn0.NqaeVsR2ucftGa-CoNpzADiAsd0SNeSkGKWSP3XOsIM'
+  );
+
+  async function fetchRemoteSettings() {
+    const { data, error } = await supabase
+      .from('settings')
+      .select('blacklist_ips, honeypot_enabled')
+      .eq('id', 2)
+      .single();
+
+    if (error) {
+      console.error("Failed to fetch settings:", error);
+      return null;
     }
 
-    // Function to create honeypot field
-    function createHoneypot() {
-        console.log("Creating Honeypot...");
+    return data;
+  }
 
-        // Check if honeypot already exists
-        if (document.getElementById('honeypot')) {
-            console.warn("Honeypot already exists!");
-            return;
+  async function addIPToBlacklist(ip) {
+    const { data, error } = await supabase
+      .from('settings')
+      .select('blacklist_ips')
+      .eq('id', 2)
+      .single();
+
+    if (error || !data) {
+      console.error("Error fetching blacklist for update:", error);
+      return;
+    }
+
+    let currentList = [];
+    try {
+      currentList = JSON.parse(data.blacklist_ips);
+      if (!Array.isArray(currentList)) currentList = [];
+    } catch (e) {
+      console.error("Invalid IP list format, resetting to new array.");
+    }
+
+    if (!currentList.includes(ip)) {
+      currentList.push(ip);
+      const { error: updateError } = await supabase
+        .from('settings')
+        .update({ blacklist_ips: JSON.stringify(currentList) })
+        .eq('id', 2);
+
+      if (updateError) {
+        console.error("Failed to update blacklist:", updateError);
+      } else {
+        console.log("IP added to blacklist:", ip);
+      }
+    }
+  }
+
+  function getUserIP(callback) {
+    fetch('https://api.ipify.org?format=json')
+      .then(res => res.json())
+      .then(data => callback(data.ip))
+      .catch(err => console.error('IP fetch error:', err));
+  }
+
+  function createHoneypot() {
+    if (document.getElementById('honeypot')) return;
+
+    const form = document.createElement('form');
+    form.style.display = 'none';
+
+    const honeypot = document.createElement('input');
+    honeypot.type = 'text';
+    honeypot.name = "honeypot";
+    honeypot.id = "honeypot";
+    honeypot.autocomplete = 'off';
+
+    form.appendChild(honeypot);
+    document.body.appendChild(form);
+  }
+
+  function verifyHoneypot(ip) {
+    setTimeout(() => {
+      const honeypot = document.getElementById("honeypot");
+      if (!honeypot) return;
+
+      if (honeypot.value.trim() !== "") {
+        console.warn("Bot activity detected from IP:", ip);
+        addIPToBlacklist(ip); // 👈 Add to Supabase blacklist
+        document.body.innerHTML = "<h1>Access Denied</h1><p>Suspicious activity detected. Your IP has been blacklisted.</p>";
+      } else {
+        document.cookie = "verified=true; path=/; max-age=300";
+        document.body.style.display = "block";
+      }
+    }, 3000);
+  }
+
+  function clearVerifiedCookie() {
+    document.cookie = "verified=; path=/; max-age=0";
+  }
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    console.log("Loading remote settings...");
+    document.body.style.display = "none";
+    clearVerifiedCookie();
+
+    const remote = await fetchRemoteSettings();
+    if (!remote) {
+      document.body.innerHTML = "<h1>Error</h1><p>Could not load protection config.</p>";
+      return;
+    }
+
+    let ipList = [];
+    try {
+      ipList = JSON.parse(remote.blacklist_ips);
+    } catch (e) {
+      console.error("Invalid IP list format in DB:", e);
+    }
+
+    getUserIP((ip) => {
+      console.log("Your IP:", ip);
+
+      if (ipList.includes(ip)) {
+        document.body.innerHTML = "<h1>Access Denied</h1><p>Your IP is blacklisted.</p>";
+        return;
+      }
+
+      if (!document.cookie.includes("verified=true")) {
+        if (remote.honeypot_enabled) {
+          createHoneypot();
+          verifyHoneypot(ip); // 👈 Pass IP for dynamic blacklisting
+        } else {
+          console.log("Honeypot disabled. Skipping...");
+          document.body.style.display = "block";
         }
-
-        const form = document.createElement('form');
-        form.style.display = 'none';
-
-        const honeypot = document.createElement('input');
-        honeypot.type = 'text';
-        honeypot.name = "honeypot";
-        honeypot.id = "honeypot";
-        honeypot.autocomplete = 'off';
-
-        form.appendChild(honeypot);
-        document.body.appendChild(form);
-
-        console.log("Honeypot Created successfully.");
-    }
-
-    // Function to verify honeypot (checking for bot behavior)
-    function verifyHoneypot() {
-        setTimeout(() => {
-            const honeypot = document.getElementById("honeypot");
-
-            if (!honeypot) {
-                console.error("Honeypot not found! Aborting verification.");
-                return;
-            }
-
-            console.log("Checking Honeypot:", honeypot.value);
-
-            // If bot-data is entered, deny access
-            if (honeypot.value.trim() !== "") {
-                console.warn("Bot detected! Denying access.");
-                document.body.innerHTML = "<h1>Access Denied</h1><p>Suspicious behavior detected.</p>";
-            } else {
-                console.log("User verified.");
-                document.cookie = "verified=true; path=/; max-age=300"; // Set the cookie
-                document.body.style.display = "block"; // Show the page
-            }
-        }, 3000); // Delay the verification to simulate processing time
-    }
-
-    // Function to clear the "verified" cookie on each page load (force honeypot check)
-    function clearVerifiedCookie() {
-        document.cookie = "verified=; path=/; max-age=0"; // Clear the cookie
-        console.log("Verified cookie cleared.");
-    }
-
-    // Main event listener to handle everything
-    document.addEventListener("DOMContentLoaded", function () {
-        console.log("DOM Content Loaded");
-
-        document.body.style.display = "none"; // Hide everything initially
-
-        // Clear the "verified" cookie to trigger honeypot check on refresh
-        clearVerifiedCookie();
-
-        // Get the user's IP and check against blacklist
-        getUserIP(function (ip) {
-            console.log("User IP:", ip);
-            
-            if (blacklistedIPs.includes(ip)) {
-                console.error("Blacklisted IP detected:", ip);
-                document.body.innerHTML = "<h1>Access Denied</h1><p>Your IP is blacklisted.</p>";
-            } else {
-                // If the user isn't verified, start honeypot process
-                if (!document.cookie.includes("verified=true")) {
-                    createHoneypot();
-                    verifyHoneypot();
-                } else {
-                    console.log("User already verified.");
-                    document.body.style.display = "block"; // Show the page
-                }
-            }
-        });
+      } else {
+        document.body.style.display = "block";
+      }
     });
-
-
+  });
 </script>
-
 
 
 
